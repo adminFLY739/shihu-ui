@@ -28,6 +28,9 @@ export const delMemberReview = (id) => {
 // 修改评价状态
 export const updateMemberReview = (id, params) => {
   return getRequest(`/member/evaluation/updateStatus/${id}`, params);
+};//
+export const updateRobotReview = (id, params) => {
+  return getRequest(`/member/evaluation/updateRobotStatus/${id}`, params);
 };
 
 //  添加或修改
@@ -38,22 +41,38 @@ export const insertOrUpdateSpec = (params) => {
 //  获取会员列表
 export const getMemberListData = (params) => {
   return getRequest("/passport/member", params);
+};//
+export const getRobotListData = (params) => {
+  return getRequest("/passport/robot", params);
 };
 
 //  获取会员详情
 export const getMemberInfoData = (id) => {
   return getRequest(`/passport/member/${id}`);
+};//
+export const getRobotInfo = (id) => {
+  return getRequest(`/passport/robot/${id}`);
 };
 
 //  修改会员基本信息
 export const updateMember = (params) => {
   return putRequest(`/passport/member`, params);
+};//
+export const updateRobot = (params) => {
+  return putRequest(`/passport/robot`, params);
 };
 
 //  添加会员基本信息
 export const addMember = (params) => {
   return postRequest(`/passport/member`, params);
+};//
+export const addRobot = (params) => {
+  return postRequest(`/passport/robot`, params);
 };
+
+export const deleteRobotInfo = (id) => {
+  return deleteRequest(`/passport/robot/${id}`);
+}
 
 //  获取会员列表
 export const getMemberAll = () => {
@@ -92,6 +111,9 @@ export const withdrawApply = (params) => {
 //会员状态修改
 export const updateMemberStatus = (params) => {
   return putRequest("/passport/member/updateMemberStatus", params);
+};//
+export const updateRobotStatus = (params) => {
+  return putRequest("/passport/member/updateRobotStatus", params);
 };
 
 //会员审核通过
@@ -150,6 +172,9 @@ export const getMemberTenant = (params) => {
 //用户状态修改
 export const updateMemberTenantStatus = (params) => {
   return putRequest("/member/memberTenant/updateStatus", params);
+};//
+export const updateRobotTenantStatus = (params) => {
+  return putRequest("/member/memberTenant/updateStatusRobot", params);
 };
 
 //下载结算单
