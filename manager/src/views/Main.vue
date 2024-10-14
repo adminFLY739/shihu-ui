@@ -6,7 +6,7 @@
     <!-- 左侧导航栏 -->
     <div class="sidebar-menu-con menu-bar">
       <div class="setting-drawer-title">
-        <h3 class="drawer-title">主题风格设置</h3>
+        <h3 class="drawer-title" align="center">小程序后台管理</h3>
       </div>
       <div class="setting-drawer-block-checbox">
         <div class="setting-drawer-block-checbox-item" @click="handleTheme('dark')">

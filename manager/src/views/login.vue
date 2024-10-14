@@ -1,19 +1,19 @@
 <template>
   <div class="login">
-    <Form ref="loginForm" :model="form" :rules="rules" class="login-form">
-      <h3 class="title">商城管理系统</h3>
+<!--  bug:enter无法登录  -->
+    <Form ref="loginForm" :model="form" :rules="rules" class="login-form" @submit.prevent>
+      <h3 class="title">小程序后台管理</h3>
       <Form-item prop="username">
-        <Input v-model="form.username" prefix="ios-contact" type="text" auto-complete="off" placeholder="账号">
+        <Input v-model="form.username" prefix="ios-contact" type="text" auto-complete="off" placeholder="账号" @keydown.enter="handleLogin">
         </Input>
       </Form-item>
       <Form-item prop="password">
         <Input v-model="form.password" type="password" auto-complete="off" placeholder="密码" prefix="ios-lock"
-          @keyup.enter="handleLogin">
+          @keydown.enter="handleLogin">
         </Input>
       </Form-item>
       <Form-item prop="code" v-if="captchaEnabled">
-        <Input v-model="form.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter="handleLogin">
-        <!--          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />-->
+        <Input v-model="form.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keydown.enter="handleLogin">
         </Input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img" />
@@ -27,10 +27,6 @@
         </Button>
       </Form-item>
     </Form>
-    <!--  底部  -->
-    <div class="el-login-footer">
-      <span></span>
-    </div>
   </div>
 </template>
 
@@ -38,7 +34,6 @@
 import { login, userInfo } from "@/api/index";
 import { getCodeImg } from "@/api/common";
 import Cookies from "js-cookie";
-import Footer from "@/views/main-parts/footer";
 import LangSwitch from "@/views/main-parts/lang-switch";
 import util from "@/libs/util.js";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
@@ -46,7 +41,6 @@ import { encrypt, decrypt } from '@/utils/jsencrypt'
 export default {
   components: {
     LangSwitch,
-    Footer,
   },
   data() {
     return {
@@ -55,15 +49,12 @@ export default {
       captchaEnabled: true,
       codeUrl: "",
       form: {
-        // 表单数据
         username: "",
         password: "",
-        mobile: "",
         code: "",
         rememberMe: false,
       },
       rules: {
-        // 验证规则
         username: [
           {
             required: true,
@@ -78,18 +69,22 @@ export default {
             trigger: "blur",
           },
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        code: [
+          {
+            required: true,
+            trigger: "change",
+            message: "请输入验证码"
+          }
+        ]
       },
     };
   },
-  //页面初始化
   mounted() {
     this.getCode();
     this.getCookie();
   },
   methods: {
     afterLogin(res) {
-      // 登录成功后处理
       let accessToken = res.result.accessToken;
       let refreshToken = res.result.refreshToken;
       this.setStore("accessToken", accessToken);
@@ -129,45 +124,32 @@ export default {
       };
     },
     handleLogin() {
-      // 使用this.$refs.loginForm调用表单验证方法validate，并传入回调函数valid
       this.$refs.loginForm.validate(valid => {
-        // 如果表单验证通过
         if (valid) {
           this.loading = true;
-
-          // 如果选择了记住我选项
           if (this.form.rememberMe) {
-            // 使用Cookies.set方法设置cookie，保存用户名和加密后的密码，并设置过期时间为30天
             Cookies.set("manager_username", this.form.username, { expires: 30 });
             Cookies.set("manager_password", encrypt(this.form.password), { expires: 30 });
             Cookies.set('manager_rememberMe', this.form.rememberMe, { expires: 30 });
           } else {
-            // 如果没有选择记住我选项，使用Cookies.remove方法移除保存的用户名、密码和记住我信息
             Cookies.remove("manager_username");
             Cookies.remove("manager_password");
             Cookies.remove('manager_rememberMe');
           }
-
-          // 创建一个FormData实例fd，并将用户名、密码和验证码数据添加到fd中
           let fd = new FormData();
           fd.append("username", this.form.username);
           fd.append("password", this.md5(this.form.password));
           fd.append("code", this.form.code);
-
-          // 调用login方法，传入fd作为参数进行登录请求
           login(fd)
             .then((res) => {
               if (res && res.success) {
-                // 登录成功后执行的操作
                 this.afterLogin(res);
               } else {
-                // 登录失败，停止加载，重新获取验证码
                 this.loading = false;
                 this.getCode();
               }
             })
             .catch(() => {
-              // 发生错误，停止加载
               this.loading = false;
             });
         }

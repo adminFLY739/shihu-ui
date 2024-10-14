@@ -21,7 +21,7 @@
             </div>
             <div class="bottom-info">
               <p>上次登录 {{memberInfo.lastLoginDate}}&nbsp;
-              <p>
+<!--              <p>-->
 <!--                <i-switch size="large" v-model="memberInfo.disabled" :true-value="true" :false-value="false"-->
 <!--                          @on-change="memberStatusChange">-->
 <!--                  <span slot="open">启用</span>-->
@@ -44,21 +44,6 @@
             <span class="label">性别：</span>
             <span v-if="memberInfo.sex===1" class="info">男</span>
             <span v-else class="info">女</span>
-          </p>
-          <p class="item">
-            <span class="label">生日：</span>
-            <span v-if="memberInfo.birthday == null || memberInfo.birthday == 'undefined'">暂未完善</span>
-            <span v-else class="info">{{memberInfo.birthday}}</span>
-          </p>
-          <p class="item">
-            <span class="label">地区：</span>
-            <span v-if="memberInfo.region == null || memberInfo.region =='' || memberInfo.region === 'undefined'"
-                  class="info">暂未完善</span>
-            <span v-else class="info">{{memberInfo.region}}</span>
-          </p>
-          <p class="item">
-            <span class="label">注册时间：</span>
-            <span class="info">{{memberInfo.createTime}}</span>
           </p>
         </div>
       </div>
