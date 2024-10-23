@@ -3,7 +3,7 @@
     <Card>
       <Row class="operation padding-row" v-if="!selectedMember">
         <Col span="22">
-          <Button @click="addRobot" type="primary" icon="ios-add">添加会员</Button>
+          <Button @click="addRobot" type="primary" icon="ios-add">添加机器人</Button>
         </Col>
       </Row>
       <Table :loading="loading" border :columns="columns" class="mt_10" :data="data" ref="table"></Table>
@@ -17,11 +17,8 @@
 
     <Modal v-model="addFlag" title="添加机器人">
       <Form ref="addMemberForm" :model="addMemberForm"  :label-width="100">
-        <FormItem label="username" prop="username" style="width: 90%">
-          <Input v-model="addMemberForm.username" maxlength="15" placeholder="请输入机器人username"/>
-        </FormItem>
-        <FormItem label="nickName" prop="nickName" style="width: 90%">
-          <Input v-model="addMemberForm.nickName" maxlength="15" placeholder="请输入机器人nickname"/>
+        <FormItem label="昵称" prop="nickName" style="width: 90%">
+          <Input v-model="addMemberForm.nickName" maxlength="15" placeholder="请输入机器人昵称"/>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -42,7 +39,7 @@
           </Button>
           <input type="file" style="display: none" id="file"/>
         </FormItem>
-        <FormItem label="学号" prop="name">
+        <FormItem label="ID" prop="name">
           <Input v-model="form.username" style="width: 200px" disabled/>
         </FormItem>
         <FormItem label="昵称" prop="name">
@@ -103,12 +100,12 @@ export default {
 
       columns: [
         {
-          title: "机器人名",
+          title: "序列",
           key: "username",
           align: "center",
         },
         {
-          title: "机器人昵称",
+          title: "昵称",
           key: "nickName",
           align: "center",
         },
@@ -203,10 +200,6 @@ export default {
 
       addMemberForm: {
         nickName: "",
-        mobile: "",
-        username: "",
-        password: "",
-        studentID: "",
       },
       // 添加用户表单
       searchForm: {
@@ -266,12 +259,14 @@ export default {
   },
   methods: {
     detail(row) {
-      this.$router.push({name: "member-detail", query: {id: row.id}});
+      this.$router.push({name: "robotDetail", query: {id: row.id}});
+      console.log("查看", row);
+      console.log("id:", row.id);
     },
     // 查看机器人
 
     editTheRobot(val) {
-      this.descTitle = `查看机器人 ${val.nickName}`;
+      this.descTitle = `${val.nickName}`;
       this.descFlag = true;
       this.updateRegion = false;
       this.getRobot(val.id);
@@ -297,14 +292,13 @@ export default {
     deleteRobot(id) {
       API_Member.deleteRobotInfo(id);
       this.$Message.success("删除成功！");
-      this.getData();
+      // this.getData();
+      setTimeout(() => this.getData(), 300);
     },
 
 
     //添加会员提交
     addMemberSubmit() {
-      this.addMemberForm.password = this.md5(this.addMemberForm.password);
-      this.addMemberForm.tenantIds = this.searchForm.tenantId;
       this.$refs.addMemberForm.validate((valid) => {
         if (valid) {
           API_Member.addRobot(this.addMemberForm).then((res) => {
