@@ -14,7 +14,7 @@
                 v-model="searchForm.name"
                 placeholder="请输入原文件名"
                 clearable
-                style="width: 200px"
+                style="width: 180px"
               />
             </Form-item>
             <Form-item label="存储文件名" prop="fileKey">
@@ -23,7 +23,7 @@
                 v-model="searchForm.fileKey"
                 placeholder="请输入存储文件名"
                 clearable
-                style="width: 200px"
+                style="width: 180px"
               />
             </Form-item>
 
@@ -35,7 +35,7 @@
                 clearable
                 @on-change="selectDateRange"
                 placeholder="选择起始时间"
-                style="width: 200px"
+                style="width: 180px"
               ></DatePicker>
             </Form-item>
              <Button @click="handleSearch" type="primary" icon="ios-search" class="search-btn"
@@ -272,7 +272,8 @@ export default {
     return {
       commonUrl, // 上传文件路径
       config, // api地址
-      selectImage: false, //是否是选择
+      selectImage: false,
+      // 是否选择图片
       accessToken: {}, // 上传token鉴权
       loading: false, // 表单加载状态
       fileType: "all", // 文件类型
@@ -322,7 +323,7 @@ export default {
         {
           title: "原文件名",
           key: "name",
-          minWidth: 130,
+          minWidth: 120,
           sortable: true,
           ellipsis: false,
           tooltip: true,
@@ -330,7 +331,7 @@ export default {
         {
           title: "存储文件名",
           key: "fileKey",
-          width: 165,
+          width: 125,
           sortable: true,
           ellipsis: false,
           tooltip: true,
@@ -338,7 +339,7 @@ export default {
         {
           title: "缩略图(点击预览)",
           key: "url",
-          width: 150,
+          width: 125,
           align: "center",
           render: (h, params) => {
             if (params.row.fileType.includes("image") > 0) {
@@ -414,16 +415,16 @@ export default {
         {
           title: "文件类型",
           key: "fileType",
-          width: 115,
+          width: 125,
           sortable: true,
-          className: this.selectImage == true ? "none" : "",
+          className: this.selectImage === true ? "none" : "",
         },
         {
           title: "文件大小",
           key: "fileSize",
-          width: 115,
+          width: 125,
           sortable: true,
-          className: this.selectImage == true ? "none" : "",
+          className: this.selectImage === true ? "none" : "",
           render: (h, params) => {
             let m =
               ((params.row.fileSize * 1.0) / (1024 * 1024)).toFixed(2) + " MB";
@@ -433,7 +434,7 @@ export default {
         {
           title: "上传者",
           key: "createBy",
-          width: 120,
+          width: 125,
           sortable: true,
           render: (h, params) => {
             let m = "";
@@ -451,7 +452,7 @@ export default {
         {
           title: "上传时间",
           key: "createTime",
-          width: 180,
+          width: 125,
           sortable: true,
           sortType: "desc",
         },
@@ -472,7 +473,7 @@ export default {
                   },
                   style: {
                     marginRight: "5px",
-                    display: this.selectImage == true ? "inline-block" : "none",
+                    display: this.selectImage === true ? "inline-block" : "none",
                   },
                   on: {
                     click: () => {
@@ -491,7 +492,7 @@ export default {
                   },
                   style: {
                     marginRight: "5px",
-                    display: this.selectImage == true ? "none" : "inline-block",
+                    display: this.selectImage === true ? "none" : "inline-block",
                   },
                   on: {
                     click: () => {
@@ -510,7 +511,7 @@ export default {
                   },
                   style: {
                     marginRight: "5px",
-                    display: this.selectImage == true ? "none" : "inline-block",
+                    display: this.selectImage === true ? "none" : "inline-block",
                   },
                   on: {
                     click: () => {
@@ -528,7 +529,7 @@ export default {
                     size: "small",
                   },
                   style: {
-                    display: this.selectImage == true ? "none" : "inline-block",
+                    display: this.selectImage === true ? "none" : "inline-block",
                   },
                   on: {
                     click: () => {

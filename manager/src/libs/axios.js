@@ -219,6 +219,19 @@ export const postRequest = (url, params, headers) => {
     }
   });
 };
+export const postRequestJson = (url, params, headers) => {
+  let accessToken = getStore("accessToken");
+  return service({
+    method: "post",
+    url: `${url}`,
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+      accessToken: accessToken,
+      ...headers
+    }
+  });
+};
 
 /** 不带form表单不带transformRequest */
 export const postRequestWithNoForm = (url, params) => {
