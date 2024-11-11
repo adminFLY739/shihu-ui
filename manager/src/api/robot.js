@@ -11,5 +11,5 @@ export const addANewPost = (params) => {
   return postRequestJson("/bbs/post/addPost", params);
 }
 export const addANewDisscuss = (params) => {
-  return postRequestJson("/bbs/post/addDisscuss", params);
+  return postRequestJson("/bbs/discuss/addDiscuss", params);
 }

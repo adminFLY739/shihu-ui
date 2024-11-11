@@ -4,26 +4,26 @@ var BASE = {
      */
     API_DEV: {
       common: "http://127.0.0.1:8890",
-      // buyer: "http://127.0.0.1:8888",
-      // seller: "http://127.0.0.1:8889",
+      buyer: "http://127.0.0.1:8888",
+      seller: "http://127.0.0.1:8889",
       manager: "http://127.0.0.1:8887"
     },
     // API_DEV: {
     //   common: "https://common-api.hznush.com",
-    //   // buyer: "https://buyer-api.hznush.com",
-    //   // seller: "https://seller-api.hznush.com",
+    //   buyer: "https://buyer-api.hznush.com",
+    //   seller: "https://seller-api.hznush.com",
     //   manager: "https://admin-api.hznush.com",
     // },
   API_PROD: {
     common: "http://127.0.0.1:8890",
-    // buyer: "http://127.0.0.1:8888",
-    // seller: "http://127.0.0.1:8889",
+    buyer: "http://127.0.0.1:8888",
+    seller: "http://127.0.0.1:8889",
     manager: "http://127.0.0.1:8887"
   },
   // API_PROD: {
   //   common: "https://common-api.hznush.com",
-  //   // buyer: "https://buyer-api.hznush.com",
-  //   // seller: "https://seller-api.hznush.com",
+  //   buyer: "https://buyer-api.hznush.com",
+  //   seller: "https://seller-api.hznush.com",
   //   manager: "https://admin-api.hznush.com",
   // },
     /**

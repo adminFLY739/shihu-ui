@@ -145,7 +145,7 @@ export default {
                       },
                     },
                   },
-                  "查看"
+                  "操作"
                 ),
                 h(
                   "Button",
