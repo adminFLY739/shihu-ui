@@ -13,3 +13,6 @@ export const addPostThumb = (params) => {
 export const addPostCollection = (params) => {
   return postRequestJson('/bbs/post/addCollection', params)
 }
+export const addPostComment = (params) => {
+  return postRequestJson('/bbs/post/addManagerComment', params)
+}

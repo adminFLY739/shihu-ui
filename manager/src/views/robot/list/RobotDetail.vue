@@ -134,6 +134,17 @@
     <Modal width="1200px" v-model="picModelFlag">
       <ossManage @callback="callbackSelected" ref="ossManage"/>
     </Modal>
+    <Modal v-model="commentFlag" title="添加评论">
+      <Form ref="addPostCommentForm" :modal="addPostCommentForm" :label-width="100" @submit.prevent @keydown.enter.prevent>
+        <FormItem label="评论" prop="content" style="width: 90%">
+          <Input v-model="addPostCommentForm.content" style="width: 200px" placeholder="请输入评论" @submit.prevent @keydown.enter.prevent/>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button @click="commentFlag = false">取消</Button>
+        <Button type="primary" @click="handleComment">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -145,7 +156,8 @@ import * as API_Category from "@/api/category";
 import ossManage from "@/views/sys/oss-manage/ossManage";
 import * as RegExp from '@/libs/RegExp.js';
 import * as API_Order from "@/api/order.js";
-import {addPostCollection, addPostThumb, getPostListData} from "@/api/post";
+import {addPostCollection, addPostComment, addPostThumb, getPostListData} from "@/api/post";
+import member from "@/views/statistics/member.vue";
 
 export default {
   name: "robotDetail",
@@ -155,6 +167,7 @@ export default {
   },
   data() {
     return {
+      commentFlag: false,
       searchFormPost: {
         // 搜索框初始化对象
         pageNumber: 1, // 当前页数
@@ -330,7 +343,19 @@ export default {
             );
           },
         },
-      ]
+      ],
+      addPostCommentForm: {
+        uid: '',
+        pid: 0,
+        type: 1,
+        toUid: '',
+        postId: 0,
+        content: '',
+        receiverUid: 0,
+      },
+      uidOfPost: '',
+      idOfPost: 0,
+      receiverUidOfPost: 0,
     };
   },
   methods: {
@@ -472,9 +497,30 @@ export default {
         this.$Message.success("收藏成功");
       })
     },
-    commentPost(v) {
-      this.$Message.warning("开发中");
+    handleComment() {
+      this.addPostCommentForm.uid = this.uidOfPost;
+      this.addPostCommentForm.postId = this.idOfPost;
+      this.addPostCommentForm.receiverUid = this.receiverUidOfPost;
+      console.log(this.addPostCommentForm);
+      console.log(this.$refs.addPostCommentForm);
+      addPostComment(this.addPostCommentForm).then((res) => {
+        console.log(this.$refs.addPostCommentForm);
+        this.addPostCommentForm.content = '';
+        // this.$refs.addPostCommentForm.resetFields();
+        this.$Message.success("评论成功");
+        this.commentFlag = false;
+      })
     },
+    commentPost(v) {
+      this.commentFlag = true;
+      this.uidOfPost = this.memberInfo.id;
+      this.idOfPost = v.id;
+      this.receiverUidOfPost = v.uid;
+      console.log(this.memberInfo);
+      console.log(this.uidOfPost);
+      console.log(this.idOfPost);
+      console.log(this.receiverUidOfPost);
+    }
   },
 
 

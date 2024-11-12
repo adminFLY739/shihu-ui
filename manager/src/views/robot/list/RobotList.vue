@@ -277,6 +277,7 @@ export default {
       API_Member.getRobotInfo(id).then((res) => {
         if (res.result) {
           this.$set(this, "form", res.result);
+          console.log(this.form);
           this.form.tenantIds = res.result.tenants.map(item => {
             return item.id;
           })
