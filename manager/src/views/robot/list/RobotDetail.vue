@@ -127,7 +127,29 @@
           </Row>
         </TabPane>
         <TabPane label="回答&邀请&关注" name="wallet">
-          开发中
+          <Table
+            :loading="loading"
+            border
+            :columns="discussColumns"
+            :data="discussData"
+            ref="table"
+            class="mt_10"
+          >
+          </Table>
+          <Row type="flex" justify="center" class="mt_10">
+            <Page
+              :current="searchFormDiscuss.pageNumber"
+              :total="discussTotal"
+              :page-size="searchFormDiscuss.pageSize"
+              @on-change="changePageDiscuss"
+              @on-page-size-change="changePageSizeDiscuss"
+              :page-size-opts="[10, 20, 50]"
+              size="default"
+              show-total
+              show-elevator
+              show-sizer
+            ></Page>
+          </Row>
         </TabPane>
       </Tabs>
     </Card>
@@ -145,6 +167,17 @@
         <Button type="primary" @click="handleComment">确定</Button>
       </div>
     </Modal>
+    <Modal v-model="replyFlag" title="发表回答" :rules="replyRule">
+      <Form ref="replyForm" :model="replyForm" :label-width="100">
+        <FormItem label="回答" prop="description" style="width: 90%">
+          <Input v-model="replyForm.description" style="width: 200px" placeholder="请输入回答"/>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button @click="replyFlag = false">取消</Button>
+        <Button type="primary" @click="handleReply">确定</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -158,6 +191,7 @@ import * as RegExp from '@/libs/RegExp.js';
 import * as API_Order from "@/api/order.js";
 import {addPostCollection, addPostComment, addPostThumb, getPostListData} from "@/api/post";
 import member from "@/views/statistics/member.vue";
+import {getDiscussListData} from "@/api/discuss";
 
 export default {
   name: "robotDetail",
@@ -168,7 +202,18 @@ export default {
   data() {
     return {
       commentFlag: false,
+      replyFlag: false,
       searchFormPost: {
+        // 搜索框初始化对象
+        pageNumber: 1, // 当前页数
+        pageSize: 10, // 页面大小
+        order: "desc", // 默认排序方式
+        goodsName:"",
+        id:"",
+        storeName:"",
+        marketEnable:"",
+      },
+      searchFormDiscuss: {
         // 搜索框初始化对象
         pageNumber: 1, // 当前页数
         pageSize: 10, // 页面大小
@@ -216,6 +261,12 @@ export default {
           { type: 'string', min: 1, message: 'Introduce no less than 1 words', trigger: 'blur' }
         ]
       },
+      replyRule: {
+        content: [
+          { required: true, message: '请输入内容', trigger: 'blur' },
+          { type: 'string', min: 1, message: 'Introduce no less than 1 words', trigger: 'blur' }
+        ]
+      },
       discussRuleValidate: {
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' }
@@ -233,7 +284,9 @@ export default {
       loading: true, // 表单加载状态
       categories: [],
       postTotal: 0,
+      discussTotal: 0,
       postData: [],
+      discussData: [],
       postColumns: [
         {
           title: "id",
@@ -248,22 +301,22 @@ export default {
         {
           title: "归属",
           key: "discussId",
-          width: 70,
+          width: 170,
         },
         {
           title: "标题",
           key: "title",
-          width: 200,
+          width: 170,
         },
         {
           title: "内容",
           key: "content",
-          width: 300,
+          width: 200,
         },
         {
           title: "图片",
           key: "media",
-          width: 350,
+          width: 300,
           slot: "postSlot",
         },
         {
@@ -344,6 +397,105 @@ export default {
           },
         },
       ],
+      discussColumns: [
+        {
+          title: "id",
+          key: "id",
+          width: 70,
+        },
+        {
+          title: "uid",
+          key: "uid",
+          width: 190,
+        },
+        {
+          title: "提问",
+          key: "title",
+          width: 170,
+        },
+        {
+          title: "内容",
+          key: "description",
+          width: 200,
+        },
+        {
+          title: "操作",
+          key: "action",
+          align: "center",
+          width: 200,
+          render: (h, params) => {
+            return h(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  justifyContent: "center",
+                },
+              },
+              [
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "info",
+                      size: "small",
+                    },
+                    style: {
+                      marginRight: "5px",
+                      display: this.selectedMember ? "none" : "block",
+                    },
+                    on: {
+                      click: () => {
+                        this.replyDiscuss(params.row);
+                      },
+                    },
+                  },
+                  "回答"
+                ),
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "info",
+                      size: "small",
+                      ghost: true,
+                    },
+                    style: {
+                      marginRight: "5px",
+                      display: this.selectedMember ? "none" : "block",
+                    },
+                    on: {
+                      click: () => {
+                        this.inviteMember(params.row);
+                      },
+                    },
+                  },
+                  "邀请"
+                ),
+                h(
+                  "Button",
+                  {
+                    props: {
+                      size: "small",
+                      type: "error",
+                    },
+                    style: {
+                      marginRight: "5px",
+                      display: this.selectedMember ? "none" : "block",
+                    },
+                    on: {
+                      click: () => {
+                        this.followDiscuss(params.row);
+                      },
+                    },
+                  },
+                  "关注"
+                ),
+              ]
+            );
+          },
+        },
+      ],
       addPostCommentForm: {
         uid: '',
         pid: 0,
@@ -352,6 +504,18 @@ export default {
         postId: 0,
         content: '',
         receiverUid: 0,
+      },
+      replyForm: {
+        title: '',
+        topicId: 0,
+        type: 1,
+        media: [],
+        longitude: 0,
+        latitude: 0,
+        address: '',
+        discussId: 0,
+        description: '',
+        cut: [],
       },
       uidOfPost: '',
       idOfPost: 0,
@@ -423,6 +587,7 @@ export default {
     init() {
       this.getRobotInfo();
       this.getPostList();
+      this.getDiscussList();
       this.fetchCategories();
     },
     // 信息初始化
@@ -466,6 +631,15 @@ export default {
       });
       this.loading = true;
     },
+    getDiscussList() {
+      this.loading = false;
+      getDiscussListData(this.searchFormDiscuss).then((res) => {
+        this.loading = false;
+        this.initDiscussData(res.result.records);
+        this.discussTotal = res.result.total;
+      });
+      this.loading = true;
+    },
     changePagePost(v) {
       this.searchFormPost.pageNumber = v;
       this.getPostList();
@@ -474,8 +648,19 @@ export default {
       this.searchFormPost.pageSize = v;
       this.getPostList();
     },
+    changePageDiscuss(v) {
+      this.searchFormDiscuss.pageNumber = v;
+      this.getDiscussList();
+    },
+    changePageSizeDiscuss(v) {
+      this.searchFormDiscuss.pageSize = v;
+      this.getDiscussList();
+    },
     initData(data) {
       this.postData = data;
+    },
+    initDiscussData(data) {
+      this.discussData = data;
     },
     thumbPost(v) {
       let addPostThumbForm = {
@@ -520,6 +705,12 @@ export default {
       console.log(this.uidOfPost);
       console.log(this.idOfPost);
       console.log(this.receiverUidOfPost);
+    },
+    replyDiscuss(v) {
+      this.replyFlag = true;
+    },
+    handleReply() {
+      this.replyFlag = false;
     }
   },
 
